@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+WORKDIR="/platform"
+ENVIRONMENTS_DIR="environments"
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+PLATFORM_ENV=${PLATFORM_ENV:-""}
+PLATFORM_IMAGE=${PLATFORM_IMAGE:-"quay.io/gambol99/kube-coreos"}
+PLATFORM_VERSION=${PLATFORM_VERSION:-"latest"}
+
+usage() {
+  cat <<EOF
+  Usage: $(basename $0) -e <ENVIRONMENT>
+  -e|--env ENVIRONMENT    : the envirnoment we are running
+  -h|--help               : display this usage menu
+
+EOF
+  if [[ -n $@ ]]; then
+    echo "[failed] $@"
+    exit 1
+  fi
+}
+
+# run is responsible for creating the platform container and passing environment
+run() {
+  /usr/bin/docker run -ti --rm \
+    -e GIT_BRANCH="${GIT_BRANCH}" \
+    -e PLATFORM_ENV="${PLATFORM_ENV}" \
+    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+    -e AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}" \
+    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+    -v ${PWD}/${ENVIRONMENT_FILE}:${WORKDIR}/env.tfvars \
+    -v ${PWD}/terraform:${WORKDIR}/terraform/.config.d \
+    ${PLATFORM_IMAGE}:${PLATFORM_VERSION}
+}
+
+# get_credentials is responsible for retrieving the credentials from the file
+get_credentials() {
+  [[ -n "${AWS_ACCESS_KEY_ID}"     ]] || AWS_ACCESS_KEY_ID=$(aws configure --profile ${PLATFORM_ENV} get aws_access_key_id)
+  [[ -n "${AWS_SECRET_ACCESS_KEY}" ]] || AWS_SECRET_ACCESS_KEY=$(aws configure --profile ${PLATFORM_ENV} get aws_secret_access_key)
+  [[ -n "${AWS_DEFAULT_REGION}"    ]] || AWS_DEFAULT_REGION=$(aws configure --profile ${PLATFORM_ENV} get region)
+}
+
+# step: get the command line options
+while [ $# -gt 0 ]; do
+  case $1 in
+    -e|--env)   PLATFORM_ENV=$2; shift 2 ;;
+    -h|--help)  usage;                   ;;
+    *)          shift;                   ;;
+  esac
+done
+
+# step: set the environment file
+ENVIRONMENT_FILE="${ENVIRONMENTS_DIR}/${PLATFORM_ENV}.tfvars"
+[[ -f "${ENVIRONMENT_FILE}" ]] || usage "the envirnoment file: ${ENVIRONMENT_FILE} does not exist"
+# step: retrieve the credentials
+get_credentials
+# step: jump into the container
+run
