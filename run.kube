@@ -10,7 +10,7 @@ PLATFORM_VERSION=${PLATFORM_VERSION:-"latest"}
 usage() {
   cat <<EOF
   Usage: $(basename $0) -e <ENVIRONMENT>
-  -e|--env ENVIRONMENT    : the envirnoment we are running
+  -e|--env ENVIRONMENT    : the environment we are running
   -h|--help               : display this usage menu
 
 EOF
@@ -51,6 +51,7 @@ done
 
 # step: set the environment file
 ENVIRONMENT_FILE="${ENVIRONMENTS_DIR}/${PLATFORM_ENV}.tfvars"
+[[ -z "${PLATFORM_ENV}"     ]] && usage "you have not specified an environment"
 [[ -f "${ENVIRONMENT_FILE}" ]] || usage "the envirnoment file: ${ENVIRONMENT_FILE} does not exist"
 # step: retrieve the credentials
 get_credentials
