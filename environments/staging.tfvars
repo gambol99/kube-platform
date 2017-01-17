@@ -62,21 +62,19 @@ mgmt_subnets = {
 
 secure_nodes = {
   "node0" = "10.80.10.100"
-  "node1" = "10.80.10.101"
-  "node2" = "10.80.11.100"
-  "node3" = "10.80.11.101"
-  "node4" = "10.80.12.100"
+  "node1" = "10.80.11.100"
+  "node2" = "10.80.12.100"
 }
-
-secure_nodes_info = {
-  "10.80.10.100_subnet" = 0
-  "10.80.10.101_subnet" = 0
-  "10.80.11.100_subnet" = 1
-  "10.80.11.101_subnet" = 1
-  "10.80.12.100_subnet" = 2
-  "10.80.10.100_zone"   = "eu-west-1a"
-  "10.80.10.101_zone"   = "eu-west-1a"
-  "10.80.11.100_zone"   = "eu-west-1b"
-  "10.80.11.101_zone"   = "eu-west-1b"
-  "10.80.12.100_zone"   = "eu-west-1c"
+secure_nodes_zones {
+  "node0_zone" = "eu-west-1a"
+  "node1_zone" = "eu-west-1b"
+  "node2_zone" = "eu-west-1c"
+}
+secure_nodes_asg = {
+  "zone0_size" = 1
+  "zone1_size" = 1
+  "zone2_size" = 1
+  "zone0_zone" = "eu-west-1a"
+  "zone1_zone" = "eu-west-1b"
+  "zone2_zone" = "eu-west-1c"
 }

@@ -21,7 +21,8 @@ module "master" {
   secure_docker_volume     = "${var.secure_docker_volume}"
   secure_flavor            = "${var.secure_flavor}"
   secure_nodes             = "${var.secure_nodes}"
-  secure_nodes_info        = "${var.secure_nodes_info}"
+  secure_nodes_asg         = "${var.secure_nodes_asg}"
+  secure_nodes_zones       = "${var.secure_nodes_zones}"
   secure_root_volume       = "${var.secure_root_volume}"
 
   aws_region               = "${var.aws_region}"
@@ -41,7 +42,7 @@ module "master" {
   vpc_id                   = "${module.platform.vpc_id}"
 }
 
-# Kuberneres API 
+# Kuberneres API
 module "api" {
   source                   = "git::https://github.com/gambol99/kube-tf-api.git?ref=master"
 
@@ -52,7 +53,7 @@ module "api" {
   kubeapi_internal_dns     = "${var.kubeapi_internal_dns}"
   private_zone_name        = "${var.private_zone_name}"
   public_zone_name         = "${var.public_zone_name}"
-  secure_asg               = "${module.master.secure_asg}"
+  secure_asg_size          = "${length(var.secure_nodes_asg)/2}"
 
   aws_region               = "${var.aws_region}"
   compute_sg               = "${module.platform.compute_sg}"
