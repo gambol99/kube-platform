@@ -16,7 +16,7 @@ variable "secrets_bucket_name" {
 }
 variable "coreos_image" {
   description = "The CoreOS image AMI to use for the nodes"
-  default     = "CoreOS-beta-1247.2.0-hvm"
+  default     = "CoreOS-beta-1248.4.0-hvm"
 }
 variable "coreos_image_owner" {
   description = "The owner of the AMI to use, used by the filter"

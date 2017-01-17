@@ -1,0 +1,4 @@
+
+*.swp
+environments/dev*
+environments/prod*
